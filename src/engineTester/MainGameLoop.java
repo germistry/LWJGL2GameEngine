@@ -16,20 +16,22 @@ public class MainGameLoop {
 		//to use those new methods. 
 		Loader loader = new Loader();
 		Renderer renderer = new Renderer();
-		//List of vertices for the quads to render. OpenGL expects vertices to be defined counter 
+		//List of vertices for the quad. OpenGL expects vertices to be defined counter 
 		//clockwise by default. 
 		float[] vertices = {
-				//Left bottom triangle
-				-0.5f, 0.5f, 0f,
-				-0.5f, -0.5f, 0f,
-				0.5f, -0.5f, 0f,
-				//Right top triangle 
-				0.5f, -0.5f, 0f,
-				0.5f, 0.5f, 0f,
-				-0.5f, 0.5f, 0f
+				-0.5f, 0.5f, 0f,  //V0
+				-0.5f, -0.5f, 0f, //V1
+				0.5f, -0.5f, 0f,  //V2
+				0.5f, 0.5f, 0f    //V3
 		};
-		//Load the list of vertices into a RawModel.
-		RawModel model = loader.loadtoVAO(vertices);
+		//List of indices for the quad. OpenGL expects them to be defined counter-clockwise
+		//by default.
+		int[] indices = {
+				0,1,3,		//Top left triangle  (V0,V1,V3)
+				3,1,2		//Bottom right triangle (V3,V1,V2)
+		};
+		//Load the list of vertices and indices into a RawModel.
+		RawModel model = loader.loadtoVAO(vertices,indices);
 		
 		//While in the game loop, objects are updated and rendering is done. Loop will continue until display
 		//is closed.

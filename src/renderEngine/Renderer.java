@@ -21,9 +21,10 @@ public class Renderer {
 		GL30.glBindVertexArray(model.getVaoID());
 		//Activate attribute list where 0 is the list number, where data is stored.
 		GL20.glEnableVertexAttribArray(0);
-		//Now rendering the VAO, mode is Triangles, where in the data it starts rendering and how many
-		//vertices it should render. 
-		GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, model.getVertexCount());
+		//Now rendering the VAO, as now using indices vbo will use Draw Element method. Mode is triangles, no 
+		//of indices to render which is in the model, type of data is unsigned ints and where in the data it 
+		//should start which is the beginning or 0.
+		GL11.glDrawElements(GL11.GL_TRIANGLES, model.getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
 		//Disable attribute list once finished using it.
 		GL20.glDisableVertexAttribArray(0);
 		//Unbind the VAO once finished using it by using 0 instead of an ID. 
