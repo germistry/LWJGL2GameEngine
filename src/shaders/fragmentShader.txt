@@ -1,0 +1,11 @@
+#version 400 core 			// Version of OpenGL to use
+
+in vec3 colour;				// Input is the output of the vertex shader. 
+
+out vec4 out_Color;			// Output is the colour of the pixel fragment shader is currently processing. 
+	
+void main(void) {			// Main method that runs for every pixel
+	
+	out_Color = vec4(colour,1.0);		// out_Color is a pixel with the rgb colour, output component is just 1.0.
+	   
+}							

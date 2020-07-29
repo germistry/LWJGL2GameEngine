@@ -6,6 +6,7 @@ import renderEngine.DisplayManager;
 import renderEngine.Loader;
 import renderEngine.RawModel;
 import renderEngine.Renderer;
+import shaders.StaticShader;
 
 public class MainGameLoop {
 
@@ -16,6 +17,9 @@ public class MainGameLoop {
 		//to use those new methods. 
 		Loader loader = new Loader();
 		Renderer renderer = new Renderer();
+		//Load the static shader so can be used when rendering. 
+		StaticShader shader = new StaticShader();
+		
 		//List of vertices for the quad. OpenGL expects vertices to be defined counter 
 		//clockwise by default. 
 		float[] vertices = {
@@ -38,16 +42,19 @@ public class MainGameLoop {
 		while (!Display.isCloseRequested()) {
 			//Prepare the renderer every single frame.
 			renderer.prepare();
-			//game logic
-			
+			//Start the static shader before rendering. 
+			shader.start();
 			//Rendering the objects. 
 			renderer.render(model);
-			
+			//Stop the static shader once rendering finished.
+			shader.stop();
 			//The display is updated every frame.
 			DisplayManager.updateDisplay();
 		}
-		//Cleanup loader once the game is closed. 
-		loader.CleanUp();
+		
+		//Cleanup static shader & loader once the game is closed.
+		shader.cleanUp();
+		loader.cleanUp();
 		
 		//When the close is requested and loop exited, the display is closed.
 		DisplayManager.closeDisplay();

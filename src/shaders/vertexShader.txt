@@ -1,0 +1,12 @@
+#version 400 core   // Version of OpenGL to use
+
+in vec3 position;   // Input for vertex shader is vec3 for 3D, position comes from the VAO
+
+out vec3 colour;    // Output is a 3D vector with conversion from position to colour
+
+void main(void) {   // Main method that runs everytime vertex is processed by this vertex shader
+
+	gl_Position = vec4(position,1.0);					// Tell OpenGL where to render this vertex on the screen, position is xyz, 1.0 for the 4th dimension
+	colour = vec3(position.x+0.5,1.0,position.y+0.5);	// Output colour is a 3D vector with position x+0.5 as red component, green component is 1.0 and blue component is position y+0.5    
+
+}

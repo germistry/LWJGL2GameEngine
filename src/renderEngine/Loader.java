@@ -37,7 +37,7 @@ public class Loader {
 	}
 	
 	//Method to delete all the created vaos and vbos from memory. 
-	public void CleanUp() {
+	public void cleanUp() {
 		//Will loop through vao list and for each vao will delete it.  
 		for (int vao:vaos) {
 			GL30.glDeleteVertexArrays(vao);
