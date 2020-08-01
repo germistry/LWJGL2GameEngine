@@ -18,6 +18,8 @@ public class StaticShader extends ShaderProgram {
 	protected void bindAttributes() {
 		//Binding the VAO listID zero to position variable in shader files
 		super.bindAttribute(0, "position");		
+		//Binding the VAO listID one to texture coords variable in shader files
+		super.bindAttribute(1, "textureCoords");
 	}
 
 }
