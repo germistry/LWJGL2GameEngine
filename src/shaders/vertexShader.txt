@@ -5,9 +5,13 @@ in vec2 textureCoords; 	// Input for vec2 2d texture coordinates
 
 out vec2  pass_textureCoords;	//Output passed straight to fragment shader 
 
+uniform mat4 transformationMatrix; //Create variable for uniform matrix
+uniform mat4 projectionMatrix;     //Create variable for projection matrix
+uniform mat4 viewMatrix;			//Create variable for the view matrix (or camera)
+
 void main(void) {   // Main method that runs everytime vertex is processed by this vertex shader
 
-	gl_Position = vec4(position,1.0);		// Tell OpenGL where to render this vertex on the screen, position is xyz, 1.0 for the 4th dimension
+	gl_Position = projectionMatrix * viewMatrix * transformationMatrix * vec4(position,1.0);		// Tell OpenGL where to render this vertex on the screen
 	pass_textureCoords = textureCoords;     // Set to input textureCoords so that they get linearly interpolated all over the quad. 
 
 }
