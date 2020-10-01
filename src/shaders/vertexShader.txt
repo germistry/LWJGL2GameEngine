@@ -2,16 +2,22 @@
 
 in vec3 position;   	// Input for vec3 3d vertex positions
 in vec2 textureCoords; 	// Input for vec2 2d texture coordinates
+in vec3 normal;			// Input for vec3 3d normal 
 
-out vec2  pass_textureCoords;	//Output passed straight to fragment shader 
+out vec2 pass_textureCoords;	//Output passed straight to fragment shader 
+out vec3 surfaceNormal;			//The normal vector 
+out vec3 toLightVector;			//The vector pointing to the light source
 
 uniform mat4 transformationMatrix; //Create variable for uniform matrix
 uniform mat4 projectionMatrix;     //Create variable for projection matrix
 uniform mat4 viewMatrix;			//Create variable for the view matrix (or camera)
+uniform vec3 lightPosition;			//Create variable for the light position
 
 void main(void) {   // Main method that runs everytime vertex is processed by this vertex shader
 
-	gl_Position = projectionMatrix * viewMatrix * transformationMatrix * vec4(position,1.0);		// Tell OpenGL where to render this vertex on the screen
+	vec4 worldPosition = transformationMatrix * vec4(position,1.0); //calculating the world position so we don't have to calculate this twice
+	gl_Position = projectionMatrix * viewMatrix * worldPosition;		// Tell OpenGL where to render this vertex on the screen
 	pass_textureCoords = textureCoords;     // Set to input textureCoords so that they get linearly interpolated all over the quad. 
-
+	surfaceNormal = (transformationMatrix * vec4(normal,0.0)).xyz;    //transformation matrix rotates model so normal has to be rotated as well so have to make it into a 4d vector then need to get the xyz components of the product
+	toLightVector = lightPosition - worldPosition.xyz;     //need to get the difference between the light position and the position of the light on the model (but will change if model is rotated) then get the xyz components
 }

@@ -39,9 +39,8 @@ public class Renderer {
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		//Clear the colour and depth buffer every single frame.
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT|GL11.GL_DEPTH_BUFFER_BIT);
-		//Using red for the background (0, 0, 0, 0) is transparent which would be black. 
-		GL11.glClearColor(1, 0, 0, 1);
-		
+		//(0, 0, 0, 0) is transparent which would be black. 
+		GL11.glClearColor(0, 0, 0, 0);
 	}
 	
 	//Method to render an entity. 
@@ -52,9 +51,10 @@ public class Renderer {
 		RawModel rawModel = model.getRawModel();
 		//First bind the VAO to be able to use it. 
 		GL30.glBindVertexArray(rawModel.getVaoID());
-		//Activate attribute lists 0 & 1 where positional data and texture coords are stored respectively.
+		//Activate attribute lists where data is stored.
 		GL20.glEnableVertexAttribArray(0);
 		GL20.glEnableVertexAttribArray(1);
+		GL20.glEnableVertexAttribArray(2);
 		//Create a transformation matrix for rendering the model
 		Matrix4f transformationMatrix = Maths.createTransformationMatrix(entity.getPosition(), 
 				entity.getRotX(), entity.getRotY(), entity.getRotZ(), entity.getScale());
@@ -71,6 +71,7 @@ public class Renderer {
 		//Disable attribute lists once finished using them.
 		GL20.glDisableVertexAttribArray(0);
 		GL20.glDisableVertexAttribArray(1);
+		GL20.glDisableVertexAttribArray(2);
 		//Unbind the VAO once finished using it by using 0 instead of an ID. 
 		GL30.glBindVertexArray(0);
 	}

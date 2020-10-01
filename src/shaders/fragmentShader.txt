@@ -1,13 +1,22 @@
 #version 400 core 			// Version of OpenGL to use
 
-in vec2 pass_textureCoords; // Input from the the vertex shader 
+in vec2 pass_textureCoords; // Inputs from the the vertex shader 
+in vec3 surfaceNormal;
+in vec3 toLightVector;
 
 out vec4 out_Color;			// Output is the colour of the pixel fragment shader is currently processing. 
 
 uniform sampler2D textureSampler; // Represents texture to be used. 
+uniform vec3 lightColour;			//Represents light colour to be used.
 	
 void main(void) {			// Main method that runs for every pixel
+
+	vec3 unitNormal = normalize(surfaceNormal);   	//Normalise the vectors so the size is equal to 1 as the direction is all that is relevant
+	vec3 unitLightVector = normalize(toLightVector);
 	
-	out_Color = texture(textureSampler,pass_textureCoords);	// GLSL method texture takes in the sampler and textureCoords for the point on the texture to sample.   
+	float nDot1 = dot(unitNormal,unitLightVector);   	//The dot product 
+	float brightness = max(nDot1,0.0);					//If value is less than 0 ignore
+	vec3 diffuse = brightness * lightColour;			//Multiply the brightness value to the lightcolour to get the final colour
+	out_Color = vec4(diffuse,1.0) * texture(textureSampler,pass_textureCoords);	// GLSL method texture takes in the sampler and textureCoords for the point on the texture to sample and multiply by the diffuse for light.   
 	   
 }							

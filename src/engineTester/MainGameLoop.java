@@ -5,10 +5,12 @@ import org.lwjgl.util.vector.Vector3f;
 
 import entities.Camera;
 import entities.Entity;
+import entities.Light;
 import models.RawModel;
 import models.TexturedModel;
 import renderEngine.DisplayManager;
 import renderEngine.Loader;
+import renderEngine.OBJLoader;
 import renderEngine.Renderer;
 import shaders.StaticShader;
 import textures.ModelTexture;
@@ -25,114 +27,15 @@ public class MainGameLoop {
 		//Load the renderer that takes in the static shader.
 		Renderer renderer = new Renderer(shader);
 		
-		float[] vertices = {			
-				-0.5f,0.5f,-0.5f,	
-				-0.5f,-0.5f,-0.5f,	
-				0.5f,-0.5f,-0.5f,	
-				0.5f,0.5f,-0.5f,		
-				
-				-0.5f,0.5f,0.5f,	
-				-0.5f,-0.5f,0.5f,	
-				0.5f,-0.5f,0.5f,	
-				0.5f,0.5f,0.5f,
-				
-				0.5f,0.5f,-0.5f,	
-				0.5f,-0.5f,-0.5f,	
-				0.5f,-0.5f,0.5f,	
-				0.5f,0.5f,0.5f,
-				
-				-0.5f,0.5f,-0.5f,	
-				-0.5f,-0.5f,-0.5f,	
-				-0.5f,-0.5f,0.5f,	
-				-0.5f,0.5f,0.5f,
-				
-				-0.5f,0.5f,0.5f,
-				-0.5f,0.5f,-0.5f,
-				0.5f,0.5f,-0.5f,
-				0.5f,0.5f,0.5f,
-				
-				-0.5f,-0.5f,0.5f,
-				-0.5f,-0.5f,-0.5f,
-				0.5f,-0.5f,-0.5f,
-				0.5f,-0.5f,0.5f
-				
-		};
-		
-		float[] textureCoords = {
-				
-				0,0,
-				0,1,
-				1,1,
-				1,0,			
-				0,0,
-				0,1,
-				1,1,
-				1,0,			
-				0,0,
-				0,1,
-				1,1,
-				1,0,
-				0,0,
-				0,1,
-				1,1,
-				1,0,
-				0,0,
-				0,1,
-				1,1,
-				1,0,
-				0,0,
-				0,1,
-				1,1,
-				1,0
-
-				
-		};
-		
-		int[] indices = {
-				0,1,3,	
-				3,1,2,	
-				4,5,7,
-				7,5,6,
-				8,9,11,
-				11,9,10,
-				12,13,15,
-				15,13,14,	
-				16,17,19,
-				19,17,18,
-				20,21,23,
-				23,21,22
-
-		};
-		
-//		//List of vertices for the quad. OpenGL expects vertices to be defined counter 
-//		//clockwise by default. 
-//		float[] vertices = {
-//				-0.5f, 0.5f, 0f,  //V0
-//				-0.5f, -0.5f, 0f, //V1
-//				0.5f, -0.5f, 0f,  //V2
-//				0.5f, 0.5f, 0f    //V3
-//		};
-//		//List of indices for the quad. OpenGL expects them to be defined counter-clockwise
-//		//by default.
-//		int[] indices = {
-//				0,1,3,		//Top left triangle  (V0,V1,V3)
-//				3,1,2		//Bottom right triangle (V3,V1,V2)
-//		};
-//		//Texture co-ordinates for texturing the quad. Need to be defined the same as the vertices. 0,0 is top left.
-//		float[] textureCoords = {
-//				0,0,  //V0
-//				0,1,  //V1
-//				1,1,  //V2
-//				1,0	  //V3
-//		};
-				
-		//Load the list of vertices, textureCoords and indices into a RawModel.
-		RawModel model = loader.loadtoVAO(vertices, textureCoords, indices);
+		//Load the raw model from obj file passing in the file name 
+		RawModel model = OBJLoader.loadObjModel("stall", loader);
 		//Creating a textured model object, passing in the rawmodel and the texture. 
-		TexturedModel staticModel = new TexturedModel(model,new ModelTexture(loader.loadTexture("FancyTexture")));
+		TexturedModel staticModel = new TexturedModel(model,new ModelTexture(loader.loadTexture("stallTexture")));
 		//Creating an entity that takes in the textured model we want it to show, needs position to be rendered at,
-		//The 3d vector should move it one position to the left. Changed to -5 now adding viewMatrix
-		Entity entity = new Entity(staticModel, new Vector3f(0,0,-5),0,0,0,1);
+		//The 3d vector - should move it 10 positions back
+		Entity entity = new Entity(staticModel, new Vector3f(0,0,-30),0,0,0,1);
+		//Creating the light source, setting position and colour (1,1,1) is white
+		Light light = new Light(new Vector3f(0,0,20),new Vector3f(1,1,1));
 		//Creating a camera
 		Camera camera = new Camera();
 		
@@ -140,13 +43,15 @@ public class MainGameLoop {
 		//is closed.
 		while (!Display.isCloseRequested()) {
 			//entity.increasePosition(0, 0, -0.1f);
-			entity.increaseRotation(1, 1, 0);
+			entity.increaseRotation(0, 1, 0);
 			//Move the camera every frame
 			camera.move();
 			//Prepare the renderer every single frame.
 			renderer.prepare();
 			//Start the static shader before rendering. 
 			shader.start();
+			//Load the light 
+			shader.loadLight(light);
 			//Every frame load up view matrix to the shader 
 			shader.loadViewMatrix(camera);
 			//Rendering the objects. 

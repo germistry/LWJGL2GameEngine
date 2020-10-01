@@ -28,9 +28,9 @@ public class Loader {
 	private List<Integer> vbos = new ArrayList<Integer>();
 	private List<Integer> textures = new ArrayList<Integer>();
 	
-	//Method takes in positions and indices of the model's vertices, and texture coords puts this data into a 
-	//VAO and returns information about the VAO as a RawModel object.
-	public RawModel loadtoVAO(float[] positions, float[] textureCoords, int[] indices) {
+	//Method takes in positions and indices of the model's vertices, texture coords and normals, and 
+	//puts this data into a VAO and returns information about the VAO as a RawModel object.
+	public RawModel loadtoVAO(float[] positions, float[] textureCoords, float[] normals, int[] indices) {
 		//CreateVAO and store the id variable. 
 		int vaoID = createVAO();
 		//Bind the indices VBO so we can use it. 
@@ -43,6 +43,8 @@ public class Loader {
 		//Store the texture coordinates into attributes list. Stored into Attribute 1. 2 is the coordinate size 
 		//(texture coords are 2d vectors eg 0,0.)
 		storeDataInAttributeList(1, 2, textureCoords);
+		//Store the normals into attributes list. Stored into Attribute 2. 3 is the coordinate size 
+		storeDataInAttributeList(2, 3, normals);
 		//Unbind the VAO once its finished being used. 
 		unbindVAO();
 		//Returns the raw model which has a vaoID and indices of the vertices.
