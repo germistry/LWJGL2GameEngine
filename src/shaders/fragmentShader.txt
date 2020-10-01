@@ -3,11 +3,14 @@
 in vec2 pass_textureCoords; // Inputs from the the vertex shader 
 in vec3 surfaceNormal;
 in vec3 toLightVector;
+in vec3 toCameraVector;
 
 out vec4 out_Color;			// Output is the colour of the pixel fragment shader is currently processing. 
 
-uniform sampler2D textureSampler; // Represents texture to be used. 
+uniform sampler2D textureSampler; 	//Represents texture to be used. 
 uniform vec3 lightColour;			//Represents light colour to be used.
+uniform float shineDampener;		//Represents the shine dampener value 
+uniform float reflectivity;			//Represents the reflectivity value
 	
 void main(void) {			// Main method that runs for every pixel
 
@@ -15,8 +18,18 @@ void main(void) {			// Main method that runs for every pixel
 	vec3 unitLightVector = normalize(toLightVector);
 	
 	float nDot1 = dot(unitNormal,unitLightVector);   	//The dot product 
-	float brightness = max(nDot1,0.0);					//If value is less than 0 ignore
+	float brightness = max(nDot1,0.2);					//If value is less than 0 ignore
 	vec3 diffuse = brightness * lightColour;			//Multiply the brightness value to the lightcolour to get the final colour
-	out_Color = vec4(diffuse,1.0) * texture(textureSampler,pass_textureCoords);	// GLSL method texture takes in the sampler and textureCoords for the point on the texture to sample and multiply by the diffuse for light.   
+	
+	vec3 unitVectorToCamera = normalize(toCameraVector);	//Normalise the vector so the size is equal to 1
+	vec3 lightDirection = -unitLightVector;					//opposite of the Light Vector 
+	vec3 reflectedLightDirection = reflect(lightDirection,unitNormal);		//GL has this reflection function to calculate the reflected light direction
+	
+	float specularFactor = dot(reflectedLightDirection,unitVectorToCamera);		//Dot product of the two vectors without any dampening
+	specularFactor = max(specularFactor,0.0);				//Cannot have a negative brightness
+	float dampenedFactor = pow(specularFactor,shineDampener); 		//specularFactor raised to power of shineDampener - effects the low values more and high values less
+	vec3 finalSpecular = max(dampenedFactor * reflectivity * lightColour,0.0);			//So that the final specular light is the colour of the light source
+	
+	out_Color = vec4(diffuse,1.0) * texture(textureSampler,pass_textureCoords) + vec4(finalSpecular,1.0);	// GLSL method texture takes in the sampler and textureCoords for the point on the texture to sample and multiply by the diffuse for light, then adds the specular lighting colour as 4d vector   
 	   
 }							

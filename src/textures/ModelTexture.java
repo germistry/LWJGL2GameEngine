@@ -5,8 +5,12 @@ package textures;
 //256x256, 512x512 etc etc. 
 public class ModelTexture {
 
-	//Just need the texture ID at this stage, will be added to later. 
+	//Texture Id property, specular lighting properties. 
 	private int textureID;
+	private float shineDampener = 1;
+	private float reflectivity = 0;
+	
+	
 	//Simple constructor that passes in the texture id. 
 	public ModelTexture(int id) {
 		this.textureID = id;
@@ -15,5 +19,17 @@ public class ModelTexture {
 	public int getID() {
 		return this.textureID;
 	}
-	
+	//Getters & setters for specular lighting properties. 
+	public float getShineDampener() {
+		return shineDampener;
+	}
+	public void setShineDampener(float shineDampener) {
+		this.shineDampener = shineDampener;
+	}
+	public float getReflectivity() {
+		return reflectivity;
+	}
+	public void setReflectivity(float reflectivity) {
+		this.reflectivity = reflectivity;
+	}	
 }

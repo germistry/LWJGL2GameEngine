@@ -13,14 +13,15 @@ public class StaticShader extends ShaderProgram {
 	private static final String VERTEX_FILE = "src/shaders/vertexShader.txt";
 	private static final String FRAGMENT_FILE = "src/shaders/fragmentShader.txt";
 	//So that uniform variable locations can be stored. 
-	private int location_transformationMatrix;
-	//So that projection matrix variables can be stored. 
+	private int location_transformationMatrix; 
 	private int location_projectionMatrix;
-	//So that view matrice variables can be stored.
 	private int location_viewMatrix;
-	//So that light matrix variables can be stored. 
+	//Both for light locations
 	private int location_lightPosition;
 	private int location_lightColour;
+	//Both for specular lighting locations
+	private int location_shineDampener;
+	private int location_reflectivity;
 
 	//Defined constructor from the abstract shader program class. Pass in the vertex file path strings. 
 	public StaticShader() {
@@ -46,7 +47,15 @@ public class StaticShader extends ShaderProgram {
 		location_viewMatrix = super.getUniformLocation("viewMatrix");
 		location_lightPosition = super.getUniformLocation("lightPosition");
 		location_lightColour = super.getUniformLocation("lightColour");
+		location_shineDampener = super.getUniformLocation("shineDampener");
+		location_reflectivity = super.getUniformLocation("reflectivity");
 	}
+	//Method to load up specular lighting variables. 
+	public void loadShineVariables(float dampener, float reflectivity) {
+		super.loadFloat(location_shineDampener, dampener);
+		super.loadFloat(location_reflectivity, dampener);
+	}
+	
 	//Method to load up a transformation Matrix to the class variable. 
 	public void loadTransformationMatrix(Matrix4f matrix) {
 		//Already have this method in the shader class so just use super. to call it here.

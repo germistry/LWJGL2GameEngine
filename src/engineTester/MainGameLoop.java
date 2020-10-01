@@ -1,5 +1,9 @@
 package engineTester;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector3f;
 
@@ -10,9 +14,8 @@ import models.RawModel;
 import models.TexturedModel;
 import renderEngine.DisplayManager;
 import renderEngine.Loader;
+import renderEngine.MainRenderer;
 import renderEngine.OBJLoader;
-import renderEngine.Renderer;
-import shaders.StaticShader;
 import textures.ModelTexture;
 
 public class MainGameLoop {
@@ -22,48 +25,55 @@ public class MainGameLoop {
 		DisplayManager.createDisplay();
 		//Open a new loader.  
 		Loader loader = new Loader();
-		//Load the static shader so can be used when rendering. 
-		StaticShader shader = new StaticShader();
-		//Load the renderer that takes in the static shader.
-		Renderer renderer = new Renderer(shader);
 		
 		//Load the raw model from obj file passing in the file name 
-		RawModel model = OBJLoader.loadObjModel("stall", loader);
+		RawModel model = OBJLoader.loadObjModel("dragon", loader);
 		//Creating a textured model object, passing in the rawmodel and the texture. 
-		TexturedModel staticModel = new TexturedModel(model,new ModelTexture(loader.loadTexture("stallTexture")));
-		//Creating an entity that takes in the textured model we want it to show, needs position to be rendered at,
-		//The 3d vector - should move it 10 positions back
-		Entity entity = new Entity(staticModel, new Vector3f(0,0,-30),0,0,0,1);
+		TexturedModel dragonModel = new TexturedModel(model,new ModelTexture(loader.loadTexture("limeGreen")));
+//		//Get the modeltexture to set the shine dampener and reflectivity values. 
+//		ModelTexture texture = staticModel.getTexture();
+//		texture.setShineDampener(20);
+//		texture.setReflectivity(1);
+//		//Creating an entity that takes in the textured model we want it to show, needs position to be rendered at,
+//		//The 3d vector - should move it 10 positions back
+//		Entity entity = new Entity(staticModel, new Vector3f(0,0,-40),0,0,0,1);
 		//Creating the light source, setting position and colour (1,1,1) is white
-		Light light = new Light(new Vector3f(0,0,20),new Vector3f(1,1,1));
+		Light light = new Light(new Vector3f(3000,2000,3000),new Vector3f(1,1,1));
 		//Creating a camera
 		Camera camera = new Camera();
 		
+		//A list of entities to try out new main rendering method
+		List<Entity> allDragons = new ArrayList<Entity>();
+		Random random = new Random();
+		for(int i = 0; i < 200; i++) {
+			float x = random.nextFloat() * 100 - 50;
+			float y = random.nextFloat() * 100 - 50;
+			float z = random.nextFloat() * -300;
+			allDragons.add(new Entity(dragonModel, new Vector3f(x,y,z), random.nextFloat() * 180f,
+					random.nextFloat() * 180f, 0f, 1f));
+		}
+		
+		//Create the renderer
+		MainRenderer renderer = new MainRenderer();
 		//While in the game loop, objects are updated and rendering is done. Loop will continue until display
 		//is closed.
 		while (!Display.isCloseRequested()) {
 			//entity.increasePosition(0, 0, -0.1f);
-			entity.increaseRotation(0, 1, 0);
+			//entity.increaseRotation(0, 1, 0);
 			//Move the camera every frame
 			camera.move();
-			//Prepare the renderer every single frame.
-			renderer.prepare();
-			//Start the static shader before rendering. 
-			shader.start();
-			//Load the light 
-			shader.loadLight(light);
-			//Every frame load up view matrix to the shader 
-			shader.loadViewMatrix(camera);
-			//Rendering the objects. 
-			renderer.render(entity,shader);
-			//Stop the static shader once rendering finished.
-			shader.stop();
+			//for any entities to render need to call that entity in the process entity method.
+			for (Entity dragon : allDragons) {
+				renderer.processEntity(dragon);
+			}
+			//Call the renderer every frame
+			renderer.render(light, camera);
 			//The display is updated every frame.
 			DisplayManager.updateDisplay();
 		}
 		
-		//Cleanup static shader & loader once the game is closed.
-		shader.cleanUp();
+		//Cleanup renderer & loader once the game is closed.
+		renderer.cleanUp();
 		loader.cleanUp();
 		
 		//When the close is requested and loop exited, the display is closed.

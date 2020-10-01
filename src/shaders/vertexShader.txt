@@ -7,6 +7,7 @@ in vec3 normal;			// Input for vec3 3d normal
 out vec2 pass_textureCoords;	//Output passed straight to fragment shader 
 out vec3 surfaceNormal;			//The normal vector 
 out vec3 toLightVector;			//The vector pointing to the light source
+out vec3 toCameraVector;		//inverse of the view matrix for the camera 
 
 uniform mat4 transformationMatrix; //Create variable for uniform matrix
 uniform mat4 projectionMatrix;     //Create variable for projection matrix
@@ -20,4 +21,5 @@ void main(void) {   // Main method that runs everytime vertex is processed by th
 	pass_textureCoords = textureCoords;     // Set to input textureCoords so that they get linearly interpolated all over the quad. 
 	surfaceNormal = (transformationMatrix * vec4(normal,0.0)).xyz;    //transformation matrix rotates model so normal has to be rotated as well so have to make it into a 4d vector then need to get the xyz components of the product
 	toLightVector = lightPosition - worldPosition.xyz;     //need to get the difference between the light position and the position of the light on the model (but will change if model is rotated) then get the xyz components
+	toCameraVector = (inverse(viewMatrix) * vec4(0.0,0.0,0.0,1.0)).xyz - worldPosition.xyz;	//vector has to be converted to a 4x4 matrix then subtracted from the world position matrix
 }

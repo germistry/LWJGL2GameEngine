@@ -22,19 +22,19 @@ public class Camera {
 	public void move() {
 		if (Keyboard.isKeyDown(Keyboard.KEY_W))	{
 			//moving along -z axis, decreases
-			position.z-=0.02f; 
+			position.z-=0.1f; 
 		}
 		if (Keyboard.isKeyDown(Keyboard.KEY_D))	{
 			//moving along x axis, increases
-			position.x+=0.02f; 
+			position.x+=0.1f; 
 		}
 		if (Keyboard.isKeyDown(Keyboard.KEY_A))	{
 			//moving along -x axis, decreases
-			position.x-=0.02f; 
+			position.x-=0.1f; 
 		}
 		if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
 			//moving along z axis, increases
-			position.z+=0.02f;
+			position.z+=0.1f;
 		}
 	}
 
