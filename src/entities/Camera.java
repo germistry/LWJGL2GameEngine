@@ -8,7 +8,7 @@ import org.lwjgl.util.vector.Vector3f;
 public class Camera {
 
 	//Camera set to 0,0,0 initially
-	private Vector3f position = new Vector3f(0,0,0);
+	private Vector3f position = new Vector3f(0,10,0);
 	//Rotation around the x,y,z axes (also known as camera pitch)
 	private float pitch;
 	//How far left or right
@@ -35,6 +35,14 @@ public class Camera {
 		if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
 			//moving along z axis, increases
 			position.z+=0.1f;
+		}
+		if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
+			//moving along y axis, increasing
+			position.y+=0.1f;
+		}
+		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+			//moving along y axis, decreasing 
+			position.y-=0.1f;
 		}
 	}
 

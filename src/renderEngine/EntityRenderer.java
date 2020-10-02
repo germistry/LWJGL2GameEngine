@@ -18,39 +18,18 @@ import textures.ModelTexture;
 import toolbox.Maths;
 
 //Class that renders the model from the VAO. 
-public class Renderer {
+public class EntityRenderer {
 
-	//Define a few constants for the projection Matrix, such as field of view, near plane & far plane. 
-	private static final float FOV = 70;
-	private static final float NEAR_PLANE = 0.1f;
-	private static final float FAR_PLANE = 1000;
-	
-	//Declare a projection matrix variable to use & static shader to be set in constructor so can be accessed
-	//whenever rendering 
-	private Matrix4f projectionMatrix;
+	//Declare a static shader to be set in constructor so can be accessed whenever rendering 
 	private StaticShader shader;
 	
-	//Constructor for the Renderer to call the create matrix method as the matrix wont change and will take 
-	//in the static shader. GL cull face used to not bother rendering back faces of models as are never seen
-	//by the camera.
-	public Renderer(StaticShader shader) {
+	//Constructor for the entity renderer to call the create matrix method as the matrix wont change and will take 
+	//in the static shader. 
+	public EntityRenderer(StaticShader shader, Matrix4f projectionMatrix) {
 		this.shader = shader;
-		GL11.glEnable(GL11.GL_CULL_FACE);
-		GL11.glCullFace(GL11.GL_BACK);
-		createProjectionMatrix();
 		shader.start();
 		shader.loadProjectionMatrix(projectionMatrix);
 		shader.stop();
-	}
-	
-	//Called once every frame to prepare OpenGL to render the game. 
-	public void prepare() {
-		//Tell OpenGL which triangles to render, the depth test will test which triangles are in front
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		//Clear the colour and depth buffer every single frame.
-		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT|GL11.GL_DEPTH_BUFFER_BIT);
-		//(0, 0, 0, 0) is transparent which would be black. 
-		GL11.glClearColor(1, 0, 0, 1);
 	}
 	
 	//New method to render an entity using the hash map created in the main renderer class. Broken into smaller 
@@ -148,24 +127,6 @@ public class Renderer {
 //		//Unbind the VAO once finished using it by using 0 instead of an ID. 
 //		GL30.glBindVertexArray(0);
 //	}
-	
-	//Create a projection matrix to use. Code not that important to understand 
-	private void createProjectionMatrix() {
-		float aspectRatio = (float) Display.getWidth() / (float) Display.getHeight();
-		float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))) * aspectRatio);
-		float x_scale = y_scale / aspectRatio;
-		float frustam_length = FAR_PLANE - NEAR_PLANE;
-		
-		projectionMatrix = new Matrix4f();
-		projectionMatrix.m00 = x_scale;
-		projectionMatrix.m11 = y_scale;
-		projectionMatrix.m22 = -((FAR_PLANE + NEAR_PLANE) / frustam_length);
-		projectionMatrix.m23 = -1;
-		projectionMatrix.m32 = -((2 * NEAR_PLANE * FAR_PLANE) / frustam_length);
-		projectionMatrix.m33 = 0;
-		
-	}
-	
 	
 }
 
