@@ -102,7 +102,7 @@ public class MainRenderer {
 			//Clear the colour and depth buffer every single frame.
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT|GL11.GL_DEPTH_BUFFER_BIT);
 			//(0, 0, 0, 0) is transparent which would be black. 
-			GL11.glClearColor(0f, 0.8f, 0.8f, 1);
+			GL11.glClearColor(0.5098f, 1f, 0.7059f, 1);
 		}
 	//Create a projection matrix to use. Code not that important to understand 
 	private void createProjectionMatrix() {

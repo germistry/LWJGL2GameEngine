@@ -18,7 +18,7 @@ void main(void) {			// Main method that runs for every pixel
 	vec3 unitLightVector = normalize(toLightVector);
 	
 	float nDot1 = dot(unitNormal,unitLightVector);   	//The dot product 
-	float brightness = max(nDot1,0.3);					//If value is less than 0 ignore
+	float brightness = max(nDot1,0.1);					//If value is less than 0 ignore
 	vec3 diffuse = brightness * lightColour;			//Multiply the brightness value to the lightcolour to get the final colour
 	
 	vec3 unitVectorToCamera = normalize(toCameraVector);	//Normalise the vector so the size is equal to 1
@@ -28,7 +28,7 @@ void main(void) {			// Main method that runs for every pixel
 	float specularFactor = dot(reflectedLightDirection,unitVectorToCamera);		//Dot product of the two vectors without any dampening
 	specularFactor = max(specularFactor,0.0);				//Cannot have a negative brightness
 	float dampenedFactor = pow(specularFactor,shineDampener); 		//specularFactor raised to power of shineDampener - effects the low values more and high values less
-	vec3 finalSpecular = max(dampenedFactor * reflectivity * lightColour,0.0);			//So that the final specular light is the colour of the light source
+	vec3 finalSpecular = max(dampenedFactor * lightColour * reflectivity,0.0);			//So that the final specular light is the colour of the light source - removed the *reflectivity as too bright
 	
 	out_Color = vec4(diffuse,1.0) * texture(textureSampler,pass_textureCoords) + vec4(finalSpecular,1.0);	// GLSL method texture takes in the sampler and textureCoords for the point on the texture to sample and multiply by the diffuse for light, then adds the specular lighting colour as 4d vector   
 	   

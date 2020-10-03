@@ -55,7 +55,7 @@ public class TerrainRenderer {
 		//Bind the texture, takes in the type and texture id from the TexturedModel. 
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.getID());
 	}
-	//Method to unbind Textured Model once all the entities using that model are rendered
+	//Method to unbind Textured Model once all the terrains using that model are rendered
 	public void unbindTexturedModel() {
 		//Disable attribute lists once finished using them.
 		GL20.glDisableVertexAttribArray(0);
