@@ -88,6 +88,10 @@ public abstract class ShaderProgram {
 	protected void loadFloat(int location, float value) {
 		GL20.glUniform1f(location, value);
 	}
+	//Method to load up values to uniform variable locations, in this case for int. 
+	protected void loadInt(int location, int value) {
+		GL20.glUniform1i(location, value);
+	}
 	//Another method to load up values to uniform variable locations, in this case for 3d vectors 
 	protected void loadVector(int location, Vector3f vector) {
 		GL20.glUniform3f(location, vector.x, vector.y, vector.z);

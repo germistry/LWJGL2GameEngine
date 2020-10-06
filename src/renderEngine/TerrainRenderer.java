@@ -12,7 +12,7 @@ import org.lwjgl.util.vector.Vector3f;
 import models.RawModel;
 import shaders.TerrainShader;
 import terrains.Terrain;
-import textures.ModelTexture;
+import textures.TerrainTexturePack;
 import toolbox.Maths;
 
 public class TerrainRenderer {
@@ -24,6 +24,7 @@ public class TerrainRenderer {
 		this.shader = shader;
 		shader.start();
 		shader.loadProjectionMatrix(projectionMatrix);
+		shader.connectTextureUnits();
 		shader.stop();
 	}
 	
@@ -47,16 +48,33 @@ public class TerrainRenderer {
 		GL20.glEnableVertexAttribArray(0);
 		GL20.glEnableVertexAttribArray(1);
 		GL20.glEnableVertexAttribArray(2);
-		//Get the model texture and load up specular lighting values.
-		ModelTexture texture = terrain.getTexture();
-		shader.loadShineVariables(texture.getShineDampener(), texture.getReflectivity());
-		//Activate a texture bank for Open GL. 
-		GL13.glActiveTexture(GL13.GL_TEXTURE0);
-		//Bind the texture, takes in the type and texture id from the TexturedModel. 
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.getID());
+		//Call the bind textures method to bind the textures
+		bindTextures(terrain);
+		//Load up specular lighting values - passing in values at this stage.
+		shader.loadShineVariables(1, 0);
+		
 	}
+	//Method to bind textures and blend map to the 5 separate texture units
+	private void bindTextures(Terrain terrain) {
+		//Get the texture pack
+		TerrainTexturePack texturePack = terrain.getTexturePack();
+		//Bind each to a texture unit by activating a texture bank and then binding.
+		GL13.glActiveTexture(GL13.GL_TEXTURE0);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texturePack.getBackgroundTexture().getTextureID());
+		GL13.glActiveTexture(GL13.GL_TEXTURE1);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texturePack.getrTexture().getTextureID());
+		GL13.glActiveTexture(GL13.GL_TEXTURE2);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texturePack.getgTexture().getTextureID());
+		GL13.glActiveTexture(GL13.GL_TEXTURE3);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texturePack.getbTexture().getTextureID());
+		GL13.glActiveTexture(GL13.GL_TEXTURE4);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, terrain.getBlendMap().getTextureID());
+	}
+	
+	
+	
 	//Method to unbind Textured Model once all the terrains using that model are rendered
-	public void unbindTexturedModel() {
+	private void unbindTexturedModel() {
 		//Disable attribute lists once finished using them.
 		GL20.glDisableVertexAttribArray(0);
 		GL20.glDisableVertexAttribArray(1);

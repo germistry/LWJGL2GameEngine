@@ -2,7 +2,8 @@ package terrains;
 
 import models.RawModel;
 import renderEngine.Loader;
-import textures.ModelTexture;
+import textures.TerrainTexture;
+import textures.TerrainTexturePack;
 
 public class Terrain {
 
@@ -12,14 +13,16 @@ public class Terrain {
 	//Flat terrain just has a x and z value. 
 	private float x;
 	private float z;
-	//Mesh for the terrain and the texture for the terrain. 
+	//Mesh for the terrain and the texturepack & blendmap for the terrain. 
 	private RawModel model;
-	private ModelTexture texture;
+	private TerrainTexturePack texturePack;
+	private TerrainTexture blendMap;
 	
 	//Constructor for the terrain, takes in the coordinates, the loader & texture.
 	//The Raw model is generated in this class.
-	public Terrain(int gridX, int gridZ, Loader loader, ModelTexture texture) {
-		this.texture = texture;
+	public Terrain(int gridX, int gridZ, Loader loader, TerrainTexturePack texturePack, TerrainTexture blendMap) {
+		this.texturePack = texturePack;
+		this.blendMap = blendMap;
 		//Work out the x & z position by multipling by the size 
 		this.x = gridX * SIZE;
 		this.z = gridZ * SIZE;
@@ -66,37 +69,25 @@ public class Terrain {
 		return loader.loadtoVAO(vertices, textureCoords, normals, indices);
 	}
 	
-	//Getters & Setters for the properties, not needed for the static values 
+	//Getters for the properties, not needed for the static values 
 	public float getX() {
 		return x;
-	}
-
-	public void setX(float x) {
-		this.x = x;
 	}
 
 	public float getZ() {
 		return z;
 	}
 
-	public void setZ(float z) {
-		this.z = z;
-	}
-
 	public RawModel getModel() {
 		return model;
 	}
 
-	public void setModel(RawModel model) {
-		this.model = model;
+	public TerrainTexturePack getTexturePack() {
+		return texturePack;
 	}
 
-	public ModelTexture getTexture() {
-		return texture;
+	public TerrainTexture getBlendMap() {
+		return blendMap;
 	}
-
-	public void setTexture(ModelTexture texture) {
-		this.texture = texture;
-	}	
 	
 }

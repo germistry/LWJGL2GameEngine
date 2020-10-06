@@ -20,7 +20,7 @@ public class OBJLoader {
 		//surrounded with try/catch in case file is missing
 		FileReader fr = null;
 		try {
-			fr = new FileReader(new File("res/"+fileName+".obj"));
+			fr = new FileReader(new File("res/obj/"+fileName+".obj"));
 		} catch (FileNotFoundException e) {
 			System.err.println("Could not locate object file.");
 			e.printStackTrace();
