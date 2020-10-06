@@ -22,10 +22,14 @@ import terrains.Terrain;
 //repeated. Instead done once for each model
 public class MainRenderer {
 
-	//Define a few constants for the projection Matrix, such as field of view, near plane & far plane. 
+	//Define a few constants for the projection Matrix, such as field of view, near plane & far plane.
 	private static final float FOV = 70;
 	private static final float NEAR_PLANE = 0.1f;
 	private static final float FAR_PLANE = 1000;
+	//Define constants for sky colour.
+	private static final float RED = 0.5098f;
+	private static final float GREEN = 1;
+	private static final float BLUE = 0.7059f;
 		
 	//Projection matrix created in main renderer for all the rendering 
 	private Matrix4f projectionMatrix;
@@ -44,31 +48,40 @@ public class MainRenderer {
 	//Constructor for the main renderer which will create the projection matrix for the renderers. 
 	//GL cull face used to not bother rendering back faces of models as are never seen by the camera.
 	public MainRenderer() {
-		GL11.glEnable(GL11.GL_CULL_FACE);
-		GL11.glCullFace(GL11.GL_BACK);
+		enableCulling();
 		createProjectionMatrix();
 		renderer = new EntityRenderer(shader,projectionMatrix);
 		terrainRenderer = new TerrainRenderer(terrainShader, projectionMatrix);
+	}
+	//Method to enable backface culling for solid textures 
+	public static void enableCulling() {
+		GL11.glEnable(GL11.GL_CULL_FACE);
+		GL11.glCullFace(GL11.GL_BACK);
+	}
+	//Method to disable backface culling for transparent textures 
+	public static void disableCulling() {
+		GL11.glDisable(GL11.GL_CULL_FACE);
 	}
 	//Method that called once to render all the entities once per scene 
 	public void render(Light lightSource, Camera camera) {
 		prepare();
 		//render the entities 
 		shader.start();
+		shader.loadSkyColour(RED, GREEN, BLUE);
 		shader.loadLight(lightSource);
 		shader.loadViewMatrix(camera);
 		//renderer now called and given all entities in the hash map
 		renderer.render(entities);
-		
+		shader.stop();
 		//render all the terrains 
 		terrainShader.start();
+		terrainShader.loadSkyColour(RED, GREEN, BLUE);
 		terrainShader.loadLight(lightSource);
 		terrainShader.loadViewMatrix(camera);
 		//terrain renderer called & given all the terrains in the list 
 		terrainRenderer.render(terrains);
 		terrainShader.stop();
 		//Make sure the hashmap is cleared after the rendering
-		shader.stop();
 		entities.clear();
 		//Make sure the list is cleared after rendering 
 		terrains.clear();
@@ -77,7 +90,6 @@ public class MainRenderer {
 	public void processTerrain(Terrain terrain) {
 		terrains.add(terrain);
 	}
-	
 	//Method to sort entities every frame and put them in the hash map
 	public void processEntity(Entity entity) {
 		//Get the model the entity is using
@@ -102,7 +114,7 @@ public class MainRenderer {
 			//Clear the colour and depth buffer every single frame.
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT|GL11.GL_DEPTH_BUFFER_BIT);
 			//(0, 0, 0, 0) is transparent which would be black. 
-			GL11.glClearColor(0.5098f, 1f, 0.7059f, 1);
+			GL11.glClearColor(RED, GREEN, BLUE, 1);
 		}
 	//Create a projection matrix to use. Code not that important to understand 
 	private void createProjectionMatrix() {

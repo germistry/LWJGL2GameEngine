@@ -4,32 +4,48 @@ in vec2 pass_textureCoords; // Inputs from the the vertex shader
 in vec3 surfaceNormal;
 in vec3 toLightVector;
 in vec3 toCameraVector;
+in float visibility; 
 
 out vec4 out_Color;			// Output is the colour of the pixel fragment shader is currently processing. 
 
-uniform sampler2D textureSampler; 	//Represents texture to be used. 
+uniform sampler2D backgroundTexture; 	//Represents textures & blendmap to be used. 
+uniform sampler2D rTexture;
+uniform sampler2D gTexture;
+uniform sampler2D bTexture;
+uniform sampler2D blendMap;
+
 uniform vec3 lightColour;			//Represents light colour to be used.
 uniform float shineDampener;		//Represents the shine dampener value 
 uniform float reflectivity;			//Represents the reflectivity value
+uniform vec3 skyColour;				//Represents the sky colour 
 	
 void main(void) {			// Main method that runs for every pixel
 
-	vec3 unitNormal = normalize(surfaceNormal);   	//Normalise the vectors so the size is equal to 1 as the direction is all that is relevant
+	vec4 blendMapColour = texture(blendMap, pass_textureCoords); 									//Get the colour of the blend map to work out how much of each texture to render, using non-tiled coordinates
+	float backTextureAmount = 1 - (blendMapColour.r + blendMapColour.g + blendMapColour.b); 		//Calculate amount to render background texture, 1 less total colour of the blendmap
+	vec2 tiledCoords = pass_textureCoords * 40.0;													//Calculate the tiled texture coordinates
+	vec4 backgroundTextureColour = texture(backgroundTexture, tiledCoords) * backTextureAmount;		//Calculate the colours of all textures 
+	vec4 rTextureColour = texture(rTexture, tiledCoords) * blendMapColour.r;
+	vec4 gTextureColour = texture(gTexture, tiledCoords) * blendMapColour.g;
+	vec4 bTextureColour = texture(bTexture, tiledCoords) * blendMapColour.b; 
+	vec4 totalColour = backgroundTextureColour + rTextureColour + gTextureColour + bTextureColour;	//Add the texture colours together to get the total colour for that point 
+	
+	vec3 unitNormal = normalize(surfaceNormal);   										//Normalise the vectors so the size is equal to 1 as the direction is all that is relevant
 	vec3 unitLightVector = normalize(toLightVector);
 	
-	float nDot1 = dot(unitNormal,unitLightVector);   	//The dot product 
-	float brightness = max(nDot1,0.2);					//If value is less than 0 ignore
-	vec3 diffuse = brightness * lightColour;			//Multiply the brightness value to the lightcolour to get the final colour
+	float nDot1 = dot(unitNormal,unitLightVector);   									//The dot product 
+	float brightness = max(nDot1,0.2);													//If value is less than 0 ignore
+	vec3 diffuse = brightness * lightColour;											//Multiply the brightness value to the lightcolour to get the final colour
 	
-	vec3 unitVectorToCamera = normalize(toCameraVector);	//Normalise the vector so the size is equal to 1
-	vec3 lightDirection = -unitLightVector;					//opposite of the Light Vector 
-	vec3 reflectedLightDirection = reflect(lightDirection,unitNormal);		//GL has this reflection function to calculate the reflected light direction
+	vec3 unitVectorToCamera = normalize(toCameraVector);								//Normalise the vector so the size is equal to 1
+	vec3 lightDirection = -unitLightVector;												//opposite of the Light Vector 
+	vec3 reflectedLightDirection = reflect(lightDirection,unitNormal);					//GL has this reflection function to calculate the reflected light direction
 	
-	float specularFactor = dot(reflectedLightDirection,unitVectorToCamera);		//Dot product of the two vectors without any dampening
-	specularFactor = max(specularFactor,0.0);				//Cannot have a negative brightness
-	float dampenedFactor = pow(specularFactor,shineDampener); 		//specularFactor raised to power of shineDampener - effects the low values more and high values less
+	float specularFactor = dot(reflectedLightDirection,unitVectorToCamera);				//Dot product of the two vectors without any dampening
+	specularFactor = max(specularFactor,0.0);											//Cannot have a negative brightness
+	float dampenedFactor = pow(specularFactor,shineDampener); 							//specularFactor raised to power of shineDampener - effects the low values more and high values less
 	vec3 finalSpecular = max(dampenedFactor * reflectivity * lightColour,0.0);			//So that the final specular light is the colour of the light source
 	
-	out_Color = vec4(diffuse,1.0) * texture(textureSampler,pass_textureCoords) + vec4(finalSpecular,1.0);	// GLSL method texture takes in the sampler and textureCoords for the point on the texture to sample and multiply by the diffuse for light, then adds the specular lighting colour as 4d vector   
-	   
+	out_Color = vec4(diffuse,1.0) * totalColour + vec4(finalSpecular,1.0);				// GLSL method texture takes in the sampler and textureCoords for the point on the texture to sample and multiply by the diffuse for light, then adds the specular lighting colour as 4d vector   
+	out_Color = mix(vec4(skyColour,1.0),out_Color, visibility);							//Final output color - after fog added. visibility = 0 would be completely in the sky colour, 1 would not be affected at all.      
 }							

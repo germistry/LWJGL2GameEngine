@@ -1,11 +1,18 @@
 package renderEngine;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+
+import javax.imageio.ImageIO;
+
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.ContextAttribs;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.PixelFormat;
+import org.newdawn.slick.opengl.ImageIOImageData;
 
 public class DisplayManager {
 
@@ -30,7 +37,16 @@ public class DisplayManager {
 			//Now can create the display. 
 			Display.create(new PixelFormat(), attribs);
 			//Set title of the display.
-			Display.setTitle("A Display of Set Width and Height");
+			Display.setTitle("A 3D Game Demo");
+			//setting icon
+			try {
+				Display.setIcon(new ByteBuffer[] {
+				        new ImageIOImageData().imageToByteBuffer(ImageIO.read(new File("res/favicon16.png")), false, false, null),
+				        new ImageIOImageData().imageToByteBuffer(ImageIO.read(new File("res/favicon32.png")), false, false, null)
+				        });
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		} catch (LWJGLException e) {
 			e.printStackTrace();
 		}

@@ -60,8 +60,15 @@ public class EntityRenderer {
 		GL20.glEnableVertexAttribArray(0);
 		GL20.glEnableVertexAttribArray(1);
 		GL20.glEnableVertexAttribArray(2);
-		//Get the model texture and load up specular lighting values every time an entity is rendered.
+		//Get the model texture 
 		ModelTexture texture = model.getTexture();
+		//Check if texture has transparency and if so disable culling 
+		if(texture.isHasTransparency()) {
+			MainRenderer.disableCulling();
+		}
+		//load up fake lighting variable
+		shader.loadFakeLightingVariable(texture.isUseFakeLighting());
+		//load up specular lighting values every time an entity is rendered
 		shader.loadShineVariables(texture.getShineDampener(), texture.getReflectivity());
 		//Activate a texture bank for Open GL. 
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
@@ -70,6 +77,8 @@ public class EntityRenderer {
 	}
 	//Method to unbind Textured Model once all the entities using that model are rendered
 	public void unbindTexturedModel() {
+		//Enable culling again to ensure is enabled for the next model to be rendered.
+		MainRenderer.enableCulling();
 		//Disable attribute lists once finished using them.
 		GL20.glDisableVertexAttribArray(0);
 		GL20.glDisableVertexAttribArray(1);
