@@ -10,6 +10,7 @@ import org.lwjgl.util.vector.Vector3f;
 import entities.Camera;
 import entities.Entity;
 import entities.Light;
+import entities.Player;
 import models.RawModel;
 import models.TexturedModel;
 import renderEngine.DisplayManager;
@@ -73,9 +74,14 @@ public class MainGameLoop {
 			entities.add(new Entity(grass, new Vector3f(random.nextFloat() * 800 - 400, 0,
 					random.nextFloat() * -600), 0, 0, 0, 1));
 		}
+		//Player entity
+		RawModel bunnyModel = OBJLoader.loadObjModel("stanfordBunny", loader);
+		TexturedModel stanfordBunny = new TexturedModel(bunnyModel, 
+				new ModelTexture(loader.loadTexture("furrTexture")));
+		Player player = new Player(stanfordBunny, new Vector3f(0, 0, -25), 0, 0, 0, 1);
 		//Creating an entity that takes in the textured model we want it to show, needs position to be rendered at,
-//		Entity entity = new Entity(staticModel, new Vector3f(0,0,-25),0,0,0,1);
-		
+		//Entity entity = new Entity(staticModel, new Vector3f(0,0,-25),0,0,0,1);
+				
 		//-----------------------------Light----------------------------------------
 		
 		//Creating the light source, setting position and colour (1,1,1) is white
@@ -86,7 +92,7 @@ public class MainGameLoop {
 		Terrain terrain = new Terrain(0, -1, loader, texturePack, blendMap);
 		Terrain terrain2 = new Terrain(-1, -1, loader, texturePack, blendMap);
 		//Creating a camera
-		Camera camera = new Camera();
+		Camera camera = new Camera(player);
 				
 		//Create the renderer
 		MainRenderer renderer = new MainRenderer();
@@ -97,6 +103,10 @@ public class MainGameLoop {
 			//entity.increaseRotation(0, 1, 0);
 			//Move the camera every frame
 			camera.move();
+			//move the player every frame
+			player.move();
+			//send player to be rendered 
+			renderer.processEntity(player);
 			//call any terrains to be rendered
 			renderer.processTerrain(terrain);
 			renderer.processTerrain(terrain2);
