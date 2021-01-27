@@ -20,8 +20,8 @@ public class TerrainShader extends ShaderProgram {
 	private int location_lightPosition;
 	private int location_lightColour;
 	//Both for specular lighting locations
-	private int location_shineDampener;
-	private int location_reflectivity;
+	private int location_shineDampener = 100000;
+	private int location_reflectivity = 0;
 	//For Fog
 	private int location_skyColour;
 	//For blend map & textures 

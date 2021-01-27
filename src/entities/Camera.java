@@ -4,7 +4,7 @@ package entities;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector3f;
 
-//The Camera or View Matrices is where when the 'camera' moves left, the world actually shifts to the right
+// When the 'camera' moves left, the world actually shifts to the right
 // to make it appear to the player they are moving to the left. 
 public class Camera {
 
@@ -13,7 +13,7 @@ public class Camera {
 	private float distanceFromPlayer = 50;
 	private float angleAroundPlayer = 0;
 	//Camera set to 0,10,0 initially
-	private Vector3f position = new Vector3f(0,10,0);
+	private Vector3f position = new Vector3f(0,2,0);
 	//Rotation around the x,y,z axes - the player can control this.
 	private float pitch = 20;
 	//How far left or right
@@ -97,6 +97,8 @@ public class Camera {
 		float xOffset = (float) (horiDistance * Math.sin(Math.toRadians(theta)));
 		float zOffset = (float) (horiDistance * Math.cos(Math.toRadians(theta)));
 		//take the offsets away from the player position as both offset directions are negative
+		//added 15 to each component to position the player away from center screen while camera still focused on 
+		//center screen. 
 		position.x = player.getPosition().x - xOffset;
 		position.z = player.getPosition().z - zOffset;
 		//y calculation straightforward as just added to player y position
