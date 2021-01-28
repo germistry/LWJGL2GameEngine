@@ -5,6 +5,7 @@ import org.lwjgl.util.vector.Vector3f;
 
 import models.TexturedModel;
 import renderEngine.DisplayManager;
+import terrains.Terrain;
 
 //Represents a player entity. 
 public class Player extends Entity {
@@ -15,8 +16,7 @@ public class Player extends Entity {
 	//Gravity and jump power floats  
 	private static final float GRAVITY = -50;
 	private static final float JUMP_POWER = 30;
-	//Terrain height - easy atm because it's flat 
-	private static final float TERRAIN_HEIGHT = 0;
+
 	//Initial values for run, turn speed and jump speed 
 	private float currentSpeed = 0;
 	private float currentTurnSpeed = 0;
@@ -30,7 +30,7 @@ public class Player extends Entity {
 	}
 	
 	//Method to move the player entity
-	public void move() {
+	public void move(Terrain terrain) {
 		checkInputs();
 		//Calculate rotation if player is turning, multiply y angle by the getFrameTime method (in secs) 
 		super.increaseRotation(0, currentTurnSpeed * DisplayManager.getFrameTimeSeconds(), 0);
@@ -45,12 +45,14 @@ public class Player extends Entity {
 		upwardSpeed += GRAVITY * DisplayManager.getFrameTimeSeconds();
 		//Increase y position of the player 
 		super.increasePosition(0, upwardSpeed * DisplayManager.getFrameTimeSeconds(), 0);
+		//get height of terrain at player position
+		float terrainHeight = terrain.getHeightOfTerrain(super.getPosition().x, super.getPosition().z);
 		//if y position of player is below terrain height set upward speed back to 0 and set player position 
 		//to terrain height. If player is on the terrain isInAir is set back to false so they can jump again
-		if(super.getPosition().y < TERRAIN_HEIGHT) {
+		if(super.getPosition().y < terrainHeight) {
 			upwardSpeed = 0;
 			isInAir = false;
-			super.getPosition().y = TERRAIN_HEIGHT;
+			super.getPosition().y = terrainHeight;
 		}
 	}
 	//Jump method set upward speed to the jump power, if player is in the air they can not jump 

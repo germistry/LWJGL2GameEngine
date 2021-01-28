@@ -15,6 +15,8 @@ uniform mat4 projectionMatrix;     //Create variable for projection matrix
 uniform mat4 viewMatrix;			//Create variable for the view matrix (or camera)
 uniform vec3 lightPosition;			//Create variable for the light position
 uniform float useFakeLighting;		//Whether or not to use fake lighting. 1 is true & 0 is false
+uniform float numberOfRows;			//Holds number of rows of texture atlas
+uniform vec2 offset; 				//values of x & y offsets for texture atlas
 
 const float fogDensity = 0.0035;		//Fog constants for calculating exponential fog 
 const float fogGradient = 5.0;
@@ -24,7 +26,7 @@ void main(void) {   // Main method that runs everytime vertex is processed by th
 	vec4 worldPosition = transformationMatrix * vec4(position,1.0); 		//calculating the world position so we don't have to calculate this twice
 	vec4 positionRelativeToCamera = viewMatrix * worldPosition;				//position of the vertex relative to camera
 	gl_Position = projectionMatrix * positionRelativeToCamera;				//Tell OpenGL where to render this vertex on the screen
-	pass_textureCoords = textureCoords;     								//Set to input textureCoords so that they get linearly interpolated all over the quad. 
+	pass_textureCoords = (textureCoords / numberOfRows) + offset;     		//pass texture coords after working out where they are offset on the texture as using texture atlas. 
 	
 	vec3 actualNormal = normal;												//Check whether to use fake lighting and if true set the normal to be facing directly up
 	if(useFakeLighting > 0.5) {

@@ -1,6 +1,7 @@
 package toolbox;
 
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import entities.Camera;
@@ -42,5 +43,13 @@ public class Maths {
 		//Now translate the matrix
 		Matrix4f.translate(negativeCameraPos, viewMatrix, viewMatrix);
 		return viewMatrix;
+	}
+	//Barycentric calculation method used for terrain collision detection calculations 
+	public static float barycentricCalc(Vector3f p1, Vector3f p2, Vector3f p3, Vector2f position) {
+		float det = (p2.z - p3.z) * (p1.x - p3.x) + (p3.x - p2.x) * (p1.z - p3.z);
+		float len1 = ((p2.z - p3.z) * (position.x - p3.x) + (p3.x - p2.x) * (position.y - p3.z)) / det;
+		float len2 = ((p3.z - p1.z) * (position.x - p3.x) + (p1.x - p3.x) * (position.y - p3.z)) / det;
+		float len3 = 1.0f - len1 - len2;
+		return len1 * p1.y + len2 * p2.y + len3 * p3.y;
 	}
 }

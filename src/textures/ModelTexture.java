@@ -5,12 +5,14 @@ package textures;
 //256x256, 512x512 etc etc. 
 public class ModelTexture {
 
-	//Texture Id property, specular lighting properties & transparency 
+	//Texture Id, specular lighting properties & transparency 
 	private int textureID;
 	private float shineDampener = 1;
 	private float reflectivity = 0;
 	private boolean hasTransparency = false;
 	private boolean useFakeLighting = false;
+	//Texture atlas properties, assume every texture could be an atlas, minimum will have 1 row (and hence 1 column)
+	private int numberOfRows = 1;
 	
 	//Simple constructor that passes in the texture id. 
 	public ModelTexture(int id) {
@@ -44,6 +46,12 @@ public class ModelTexture {
 	}
 	public void setUseFakeLighting(boolean useFakeLighting) {
 		this.useFakeLighting = useFakeLighting;
+	}
+	public int getNumberOfRows() {
+		return numberOfRows;
+	}
+	public void setNumberOfRows(int numberOfRows) {
+		this.numberOfRows = numberOfRows;
 	}	
 	
 }

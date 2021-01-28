@@ -62,6 +62,8 @@ public class EntityRenderer {
 		GL20.glEnableVertexAttribArray(2);
 		//Get the model texture 
 		ModelTexture texture = model.getTexture();
+		//load up texture atlas attributes 
+		shader.loadNumberOfRows(texture.getNumberOfRows());
 		//Check if texture has transparency and if so disable culling 
 		if(texture.isHasTransparency()) {
 			MainRenderer.disableCulling();
@@ -93,6 +95,8 @@ public class EntityRenderer {
 				entity.getRotX(), entity.getRotY(), entity.getRotZ(), entity.getScale());
 		//Load transformationMatrix into the static shader
 		shader.loadTransformationMatrix(transformationMatrix);
+		//Load the offsets - needs to be done per instance
+		shader.loadOffset(entity.getTextureXOffset(), entity.getTextureYOffset());
 	}
 	
 //	//Old method to render an entity. Not very efficient!

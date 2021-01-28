@@ -12,8 +12,10 @@ public class Entity {
 	private Vector3f position;
 	private float rotX,rotY,rotZ;
 	private float scale;
+	//Attribute for texture atlas
+	private int textureIndex = 0;
 	
-	//Constructor for the entity. 
+	//Constructor for the entity - set textured model, position, rotation and scale. 
 	public Entity(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale) {
 		this.model = model;
 		this.position = position;
@@ -22,17 +24,39 @@ public class Entity {
 		this.rotZ = rotZ;
 		this.scale = scale;
 	}
+	//Constructor for the entity - set textured model, position, rotation and scale and also allows setting 
+	//of a texture atlas index.
+	public Entity(TexturedModel model, int index, Vector3f position, float rotX, float rotY, float rotZ, float scale) {
+		this.model = model;
+		this.textureIndex = index;
+		this.position = position;
+		this.rotX = rotX;
+		this.rotY = rotY;
+		this.rotZ = rotZ;
+		this.scale = scale;
+	}
+	
 	//Method to move entity around, takes in x y & z values of how far entity is to be moved. 
 	public void increasePosition(float dx, float dy, float dz) {
 		this.position.x += dx;
 		this.position.y += dy;
 		this.position.z += dz;
 	}
-	//Method to rotate the entity, takes in x y & z values of the angle to rotate the entity
+	//Method to rotate the entity, takes in x y & z values of the angle to rotate the entity 
 	public void increaseRotation(float dx, float dy, float dz) {
 		this.rotX += dx;
 		this.rotY += dy;
 		this.rotZ += dz;
+	}
+	//Method to calculate x offset on the texture for that particular index value. 
+	public float getTextureXOffset() {
+		int column = textureIndex % model.getTexture().getNumberOfRows();
+		return (float) column / (float) model.getTexture().getNumberOfRows();
+	}
+	//Method to calculate y offset on the texture for that particular index value. (dont need to floor as both ints)
+	public float getTextureYOffset() {
+		int row = textureIndex / model.getTexture().getNumberOfRows();
+		return (float) row / (float) model.getTexture().getNumberOfRows();
 	}
 	
 	//Getters and setters for the entity 

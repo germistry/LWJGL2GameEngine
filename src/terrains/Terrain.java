@@ -6,12 +6,14 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import models.RawModel;
 import renderEngine.Loader;
 import textures.TerrainTexture;
 import textures.TerrainTexturePack;
+import toolbox.Maths;
 
 public class Terrain {
 
@@ -27,6 +29,8 @@ public class Terrain {
 	private RawModel model;
 	private TerrainTexturePack texturePack;
 	private TerrainTexture blendMap;
+	//Store height of each terrain vertex for player/entity collision detection in a table (float array of arrays). 
+	private float[] [] heights;
 	
 	//Constructor for the terrain, takes in the coordinates, the loader & texture.
 	//The Raw model is generated in this class.
@@ -52,7 +56,8 @@ public class Terrain {
 		}
 		//Vertex Count based on height of image used for heightmap 
 		int VERTEX_COUNT = image.getHeight();
-		
+		//set number of vertices to each side of terrain
+		heights = new float[VERTEX_COUNT] [VERTEX_COUNT];
 		int count = VERTEX_COUNT * VERTEX_COUNT;
 		float[] vertices = new float[count * 3];
 		float[] normals = new float[count * 3];
@@ -63,7 +68,9 @@ public class Terrain {
 			for(int j=0;j<VERTEX_COUNT;j++){
 				//calculating vertices 
 				vertices[vertexPointer*3] = (float)j/((float)VERTEX_COUNT - 1) * SIZE;
-				vertices[vertexPointer*3+1] = getHeight(j, i, image);
+				float height = getHeight(j, i, image);
+				heights[j][i] = height;
+				vertices[vertexPointer*3+1] = height;
 				vertices[vertexPointer*3+2] = (float)i/((float)VERTEX_COUNT - 1) * SIZE;
 				//calculating normals so lighting effects work on the terrain
 				Vector3f normal = calculateNormal(j, i, image);
@@ -122,7 +129,42 @@ public class Terrain {
 		height *= MAX_HEIGHT;
 		return height;
 	}
-		
+	//Method to get the height of terrain given x or z coordinates
+	public float getHeightOfTerrain(float worldX, float worldZ) {
+		//Convert world coordinate into position relative to the terrain
+		float terrainX = worldX - this.x;
+		float terrainZ = worldZ - this.z;
+		//Calculate size of each grid square
+		float gridSquareSize = SIZE / ((float)heights.length - 1);
+		//calculate which grid square the player is in
+		int gridX = (int) Math.floor(terrainX / gridSquareSize);
+		int gridZ = (int) Math.floor(terrainZ / gridSquareSize);
+		//test if this x,z position is actually on the terrain, ie not to the left or above the terrain looking
+		//from straight down
+		if(gridX >= heights.length - 1 || gridZ >= heights.length - 1 || gridX < 0 || gridZ < 0) {
+			return 0;
+		}
+		//use modulas to find out distance player is from the 0,0 origin, result gives a x,z coord between 0 and 1
+		float xCoord = (terrainX % gridSquareSize) / gridSquareSize;
+		float zCoord = (terrainZ % gridSquareSize) / gridSquareSize;
+		//Work out which triangle the player is on, ie top left triangle has vertices 0,0 0,1 1,0 so h boundary is 
+		// x < 1-z and so bottom triangle h boundary is modelled by x > 1-z. Use barycentric maths for this one
+		float answer;
+		if(xCoord <= (1 - zCoord)) {
+			answer = Maths.barycentricCalc(
+					new Vector3f(0, heights[gridX][gridZ] , 0), 
+					new Vector3f(1, heights[gridX + 1][gridZ] , 0), 
+					new Vector3f(0, heights[gridX][gridZ + 1] , 1), 
+					new Vector2f(xCoord, zCoord)); 
+		} else {
+			answer = Maths.barycentricCalc(
+					new Vector3f(1, heights[gridX + 1][gridZ] , 0), 
+					new Vector3f(1, heights[gridX + 1][gridZ + 1] , 1), 
+					new Vector3f(0, heights[gridX][gridZ + 1] , 1), 
+					new Vector2f(xCoord, zCoord)); 
+		}
+		return answer;
+	}
 	//Getters for the properties, not needed for the static values 
 	public float getX() {
 		return x;

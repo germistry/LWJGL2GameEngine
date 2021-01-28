@@ -9,6 +9,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 //Abstract class as this program represents a generic shader program that has all the attributes and 
@@ -92,6 +93,10 @@ public abstract class ShaderProgram {
 	protected void loadInt(int location, int value) {
 		GL20.glUniform1i(location, value);
 	}
+	//Another method to load up values to uniform variable locations, in this case for 2d vectors 
+		protected void loadVector(int location, Vector2f vector) {
+			GL20.glUniform2f(location, vector.x, vector.y);
+		}
 	//Another method to load up values to uniform variable locations, in this case for 3d vectors 
 	protected void loadVector(int location, Vector3f vector) {
 		GL20.glUniform3f(location, vector.x, vector.y, vector.z);

@@ -1,6 +1,7 @@
 package shaders;
 
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import entities.Camera;
@@ -27,6 +28,9 @@ public class StaticShader extends ShaderProgram {
 	private int location_useFakeLighting;
 	//For Fog
 	private int location_skyColour;
+	//for texture atlas
+	private int location_numberOfRows;
+	private int location_offset;
 
 	//Defined constructor from the abstract shader program class. Pass in the vertex file path strings. 
 	public StaticShader() {
@@ -56,7 +60,18 @@ public class StaticShader extends ShaderProgram {
 		location_reflectivity = super.getUniformLocation("reflectivity");
 		location_useFakeLighting = super.getUniformLocation("useFakeLighting");
 		location_skyColour = super.getUniformLocation("skyColour");
+		location_numberOfRows = super.getUniformLocation("numberOfRows");
+		location_offset = super.getUniformLocation("offset");
 	}
+	
+	//Methods to load up number of rows & offset for texture atlas
+	public void loadNumberOfRows(int numberOfRows) {
+		super.loadFloat(location_numberOfRows, numberOfRows);
+	}
+	public void loadOffset(float x, float y) {
+		super.loadVector(location_offset, new Vector2f(x,y));
+	}
+	
 	//Method to load up sky colour for fog effect.
 	public void loadSkyColour(float r, float g, float b) {
 		super.loadVector(location_skyColour, new Vector3f(r,g,b));
